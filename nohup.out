@@ -1,0 +1,4 @@
+stress: info: [27300] dispatching hogs: 0 cpu, 0 io, 1 vm, 0 hdd
+stress: FAIL: [27300] (415) <-- worker 27301 got signal 15
+stress: WARN: [27300] (417) now reaping child worker processes
+stress: FAIL: [27300] (451) failed run completed in 844s

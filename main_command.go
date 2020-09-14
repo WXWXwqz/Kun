@@ -7,6 +7,7 @@ import (
 	"github.com/urfave/cli"
 	"os"
 	"os/exec"
+	"Kun/cgroups/subsystems"
 
 	//"github.com/WXWXwqz/Kun/container"
 )
@@ -20,14 +21,42 @@ var runCommand = cli.Command{
 			Name:  "ti",
 			Usage: "enable tty",
 		},
+		cli.StringFlag{
+			Name: "m",
+			Usage: "memory limit",
+		},
+		cli.StringFlag{
+			Name: "cpushare",
+			Usage: "cpushare limit",
+		},
+		cli.StringFlag{
+			Name: "cpuset",
+			Usage: "cpuset limit",
+		},
 	},
 	Action: func(context *cli.Context) error {
 		if len(context.Args()) < 1 {
 			return fmt.Errorf("Missing container command")
 		}
-		cmd := context.Args().Get(0)
+		var cmdArray []string
+		fmt.Println("*************************************")
+		for _, arg := range context.Args() {
+			fmt.Println(arg)
+			cmdArray = append(cmdArray, arg)
+		}
+		fmt.Println("*************************************")
 		tty := context.Bool("ti")
-		Run(tty, cmd)
+		resConf := &subsystems.ResourceConfig{
+			MemoryLimit: context.String("m"),
+			CpuSet: context.String("cpuset"),
+			CpuShare:context.String("cpushare"),
+		}
+		fmt.Println("--------------------------------------")
+		fmt.Println(context.String("m"))
+		fmt.Println(context.String("cpuset"))
+		fmt.Println(context.String("cpushare"))
+		fmt.Println("--------------------------------------")
+		Run(tty, cmdArray, resConf)
 		return nil
 	},
 }
@@ -37,9 +66,7 @@ var initCommand = cli.Command{
 	Usage: "Init container process run user's process in container. Do not call it outside",
 	Action: func(context *cli.Context) error {
 		log.Infof("init come on")
-		cmd := context.Args().Get(0)
-		log.Infof("command %s", cmd)
-		err := container.RunContainerInitProcess(cmd, nil)
+		err := container.RunContainerInitProcess()
 		return err
 	},
 }
